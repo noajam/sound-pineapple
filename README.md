@@ -5,9 +5,9 @@ This will be the main repository used for learning Generative Adversarial Networ
 
 1. Pull up this repository and read through the new additions as I go over them
 2. With git installed, clone the repository by using the following command so that you can follow along and add code in real time
-  > git clone https://github.com/noajam/sound-pineapple.git
+    `git clone https://github.com/noajam/sound-pineapple.git`
 3. With a GitHub account and git installed, fork this repository to your own personal version on your page, and then clone that onto your local machine with the following command, replacing yourRepositoryURL with, obviously, the URL of your repository
-  > git clone yourRepositoryURL
+    `git clone yourRepositoryURL`
 
 For the last week of the program, the program will once again become very hands-on. More details about this will be given towards the end of week 5.
 
