@@ -7,14 +7,16 @@ import torchvision.transforms as transforms
 
 
 def celebA():
+    transform = transforms.Compose([
+        transforms.Resize(64),
+        transforms.CenterCrop(64),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5),
+                             (0.5, 0.5, 0.5))
+        ])
+    
     dataset = datasets.ImageFolder(root="data/celebA",
-                                  transform=transforms.Compose([
-                                      transforms.Resize(64),
-                                      transforms.CenterCrop(64),
-                                      transforms.ToTensor(),
-                                      transforms.Normalize((0.5, 0.5 , 0.5),
-                                                           (0.5, 0.5, 0.5))
-                                      ]))
+                                  transform=transform)
 
     dataloader = DataLoader(dataset, 128, shuffle=True, num_workers=2)
     
@@ -22,9 +24,26 @@ def celebA():
 
 
 def paintings():
+    transform = transforms.Compose([
+        transforms.Resize(64),
+        transforms.CenterCrop(64),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5),
+                             (0.5, 0.5, 0.5))
+        ])
     
+    dataset = datasets.ImageFolder(root="data/paintings/VVG",
+                                  transform=transform)
     
-    return
+    dataloader = DataLoader(dataset, 32, shuffle=True, num_workers=2)
+    
+    return dataset, dataloader
+
+def MNIST():
+    dataset = datasets.MNIST(train=True)
+    
+def fashionMNIST():
+    pass
 
 
 """
