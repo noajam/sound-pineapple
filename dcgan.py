@@ -2,29 +2,29 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-import torchvision.utils as vutils
-
 from config.loadJSON import read_json
-
 from models import discriminator, generator
-
 from utils.weights import weights_init
-
-from datasets.dataset import *
-
-from tqdm import tqdm
+from datasets.dataset import celeba, paintings, mnist
 
 import matplotlib.pyplot as plt
+import sys
+import random
 
 # Set configuration dictionary
 cfg = read_json("config/config.json")
 
+random.seed(cfg['seed'])
+torch.manual_seed(cfg['seed'])
+
 # Set dataset and dataloader
 dataset, dataloader = None, None
-if cfg['dataset'] == 'celebA':
-    dataset, dataloader = celebA()
+if cfg['dataset'] == 'celeba':
+    dataset, dataloader = celeba(cfg['batch_size'])
 elif cfg['dataset'] == 'paintings':
     dataset, dataloader = paintings()
+elif cfg['dataset'] == 'mnist':
+    dataset, dataloader = mnist(cfg['batch_size'])
 else:
     raise ValueError("Dataset specified in config/config.json is not implemented.")
 
@@ -54,7 +54,7 @@ dLoss = []
 
 iters = 0
 
-fixed_noise = torch.randn(64, cfg['nz'], 1, 1)
+fixed_noise = torch.randn(1, cfg['nz'], 1, 1)
 
 
 
@@ -62,7 +62,7 @@ fixed_noise = torch.randn(64, cfg['nz'], 1, 1)
 # train the generator
 
 
-for epoch in tqdm(range(cfg['epochs'])):
+for epoch in range(cfg['epochs']):
     
     for i, data in enumerate(dataloader):
         # loads tensor of size [128, 3, 64, 64]
@@ -73,8 +73,7 @@ for epoch in tqdm(range(cfg['epochs'])):
         data = data[0]
         batchSize = data.size(0)
         
-        labels = torch.full((batchSize, 1, 1, 1), real_label, dtype=float)
-        
+        labels = torch.full((batchSize, 1, 1, 1), real_label, dtype=torch.float)
         output = netD(data)
         
         errD_real = criterion(output, labels)
@@ -109,28 +108,31 @@ for epoch in tqdm(range(cfg['epochs'])):
         
         
         if i % 50 == 0:
-            print("----------------------------------------------------")
+            print("\n\n---------------------------------------------------")
             print("Epoch: " + str(epoch + 1) + "/" + str(cfg['epochs']))
             print("Batch: " + str(i + 1) + "/" + str(len(dataloader)))
-            print("Discriminator Error: " + str(errD.item()))
-            print("Generator Error: " + str(errG.item()))
-            print("Dx: " + str(D_x), "DGz1: " + str(D_G_z1), "DGz2: " + str(D_G_z2))
-            print("----------------------------------------------------\n\n")
+            print("Discriminator Error: " + "{0:.2f}".format(errD.item()))
+            print("Generator Error: " + "{0:.2f}".format(errG.item()))
+            print("Dx: " + "{0:.2f}".format(D_x))
+            print("DGz1: " + "{0:.2f}".format(D_G_z1))
+            print("DGz2: " + "{0:.2f}".format(D_G_z2))
+            print("---------------------------------------------------\n")
+            
+            with torch.no_grad():
+                viztest = netG(fixed_noise).detach().view(64, 64)
+            plt.imshow(viztest, cmap=plt.cm.bone)
+            plt.show(block=False)
+            
+            print("\n50-Batch Progress:")
+        else:
+            progress = i % 50
+            left = 49 - progress
+            sys.stdout.write("\r|" + ("#" * progress) + (" " * left) + "|")
+            
+        if i == 0:
             torch.save(netG, 'checkpoints/generator.pth')
             torch.save(netD, 'checkpoints/discriminator.pth')
     
         
         gLoss.append(errG.item())
         dLoss.append(errD.item())
-        
-        if (iters % 500 == 0) or ((epoch == cfg['epochs']-1) and (i == len(dataloader)-1)):
-            with torch.no_grad():
-                fake = netG(fixed_noise).detach().cpu()
-            img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
-
-        iters += 1
-
-    
-    
-    
-    

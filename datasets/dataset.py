@@ -6,52 +6,45 @@ import torchvision.transforms as transforms
 
 
 
-def celebA():
-    transform = transforms.Compose([
-        transforms.Resize(64),
-        transforms.CenterCrop(64),
-        transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5),
-                             (0.5, 0.5, 0.5))
-        ])
-    
-    dataset = datasets.ImageFolder(root="data/celebA",
-                                  transform=transform)
 
-    dataloader = DataLoader(dataset, 128, shuffle=True, num_workers=2)
+def celeba(batchSize):
+
+    dataset = datasets.ImageFolder(root="data/celebA",
+                                  transform=transforms.Compose([
+                                      transforms.Resize(64),
+                                      transforms.CenterCrop(64),
+                                      transforms.ToTensor(),
+                                      transforms.Normalize((0.5, 0.5, 0.5),
+                                                           (0.5, 0.5, 0.5))
+                                      ]))
+
+    dataloader = DataLoader(dataset, batchSize, shuffle=True, num_workers=2)
     
     return dataset, dataloader
 
 
-def paintings():
-    transform = transforms.Compose([
-        transforms.Resize(64),
-        transforms.CenterCrop(64),
-        transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5),
-                             (0.5, 0.5, 0.5))
-        ])
-    
+def paintings():    
     dataset = datasets.ImageFolder(root="data/paintings/VVG",
-                                  transform=transform)
+                                  transform=transforms.Compose([
+                                      transforms.Resize(64),
+                                      transforms.CenterCrop(64),
+                                      transforms.ToTensor(),
+                                      transforms.Normalize((0.5, 0.5, 0.5),
+                                                           (0.5, 0.5, 0.5))
+                                      ]))
     
     dataloader = DataLoader(dataset, 32, shuffle=True, num_workers=2)
     
     return dataset, dataloader
 
-def MNIST():
-    dataset = datasets.MNIST(train=True)
+def mnist(batchSize):
+    dataset = datasets.MNIST(root="data/mnist", download=True,
+                           transform=transforms.Compose([
+                               transforms.Resize(64),
+                               transforms.ToTensor(),
+                               transforms.Normalize((0.5,), (0.5,)),
+                               ]))
     
-def fashionMNIST():
-    pass
-
-
-"""
-/data/celebA
-    -> img_align_celeba
-        -> img01.jpg
-        -> img02.jpg
-        -> ...
-"""
-
-# Find an image dataset of your own
+    dataloader = DataLoader(dataset, batchSize, shuffle=True, num_workers=2)
+    
+    return dataset, dataloader
