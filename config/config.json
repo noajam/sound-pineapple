@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {    "dataset":"",    "ngpu":0,    "nz":100,    "ngf":64,    "ndf":64,    "nc":3,        "lr":0.0002,    "epochs":5,    "batch_size":32}
+=======
+{    "dataset":"mnist",    "ngpu":0,    "nz":100,    "ngf":64,    "ndf":64,    "nc":1,        "lr":0.0002,    "epochs":25,    "batch_size":64,        "seed":999}
+>>>>>>> 3f0f4f2e377f854d4796f0e34dc6d44dc95f8a5f
