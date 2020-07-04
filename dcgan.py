@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 
 # Set configuration dictionary
 cfg = read_json("config/config.json")
+device = 'cuda' if torch.cuda.is_available() and cfg['cuda'] else 'cpu'
 
 # Set dataset and dataloader
 dataset, dataloader = None, None
